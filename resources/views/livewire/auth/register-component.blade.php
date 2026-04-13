@@ -40,7 +40,11 @@
                 autocomplete="new-password"
                 placeholder="Choose a password"
             >
-            @error('password') <p class="field-error">{{ $message }}</p> @enderror
+            @foreach ($errors->get('password') as $message)
+                @if (! str_contains(strtolower($message), 'confirm'))
+                    <p class="field-error">{{ $message }}</p>
+                @endif
+            @endforeach
         </div>
 
         <div class="md3-field">
@@ -54,9 +58,11 @@
                 placeholder="Repeat your password"
             >
             @error('passwordConfirmation') <p class="field-error">{{ $message }}</p> @enderror
-            @if ($errors->has('password') && str_contains(strtolower($errors->first('password')), 'confirm'))
-                <p class="field-error">{{ $errors->first('password') }}</p>
-            @endif
+            @foreach ($errors->get('password') as $message)
+                @if (str_contains(strtolower($message), 'confirm'))
+                    <p class="field-error">{{ $message }}</p>
+                @endif
+            @endforeach
         </div>
 
         <button type="submit" class="md3-button md3-button--filled">Create account</button>

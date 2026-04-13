@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Auth;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ForgotPasswordRequest extends FormRequest
@@ -13,7 +12,7 @@ class ForgotPasswordRequest extends FormRequest
     }
 
     /**
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, array<int, string>|string>
      */
     public function rules(): array
     {
@@ -22,4 +21,3 @@ class ForgotPasswordRequest extends FormRequest
         ];
     }
 }
-

@@ -1,43 +1,46 @@
-## 🗓️ 2026-04-13 — Auth flows get real validation (and a design north star)
+## 🗓️ 2026-04-13 — The Todo schema lands (and auth gets cleaner)
 
 Hey! Here is what changed today in this project:
 
 ### What's New
-The app now includes a complete first-pass authentication surface for guests: sign in, sign up, forgot password, reset password, and logout are all wired into the Laravel app. Those screens now validate through dedicated Form Request classes (with friendly, human messages), so the rules live in one place and behave consistently across the UI. A repo-specific `design.md` was added as a “north star” for the Material 3 direction, including tokens, layout rules, and component patterns we can follow as the Todo features land.
+The database now has a real foundation for the Todo app: tasks, categories, tags, subtasks, attachments, and the pivot tables that connect them. Users also gained a couple of preferences at the schema level (an optional avatar and a theme preference) so we can build a more personal, polished experience without bolting it on later.
 
 ### What Was Improved
-The auth Livewire components were simplified by sharing a small validation concern, eliminating duplicated rule arrays and making it harder for the UI and backend expectations to drift apart. The register screen now shows the “password confirmation” error in the place users expect (under the confirmation field), even though the underlying rule is attached to `password`. Automated feature coverage was expanded to include stricter password rules and more validation edge cases, giving the guest journey better regression protection.
+Authentication behavior was pushed into small Action classes, keeping controllers and Livewire components thin and making the flows easier to test. The login screen now supports “Remember me”, and the register form error rendering was tweaked so password confirmation mistakes show up exactly where users look for them.
 
 ### What Was Removed or Cleaned Up
-An accidental Office lock file in `_docs` was removed so it does not get mistaken for real documentation. The repository now ignores those temporary `~$` doc files going forward, which keeps future commits cleaner and reduces noise during review.
+Nothing major was removed in this update — this was mostly about adding a solid schema and tightening up existing auth code.
 
 ### Files That Changed
-- `.gitignore` — now ignores temporary Office lock files inside `_docs`
-- `AGENTS.md` — adds repository-specific contributor guidance for architecture, naming, testing, and UI expectations
-- `README.md` — replaces the default Laravel readme with project-specific setup, stack, architecture, and roadmap notes
-- `_docs/todo-app-plan.docx` — adds the product roadmap document referenced by the repository guidance
-- `app/Http/Requests/Auth/ForgotPasswordRequest.php` — centralizes forgot-password validation and enforces that the email exists
-- `app/Http/Requests/Auth/LoginRequest.php` — centralizes login validation and adds a minimum password length rule
-- `app/Http/Requests/Auth/RegisterRequest.php` — centralizes registration validation and adds friendly, user-facing messages
-- `app/Http/Controllers/Auth/LogoutController.php` — adds a dedicated logout endpoint that clears the session safely
-- `app/Livewire/Auth/ForgotPasswordComponent.php` — adds the forgot-password flow and reset-link dispatch behavior
-- `app/Livewire/Auth/LoginComponent.php` — adds the login form logic, validation, and redirect back into the app shell
-- `app/Livewire/Auth/RegisterComponent.php` — adds account creation with automatic sign-in after registration
-- `app/Livewire/Auth/ResetPasswordComponent.php` — adds the password reset flow using Laravel’s password broker
-- `app/Livewire/Concerns/UsesFormRequestValidation.php` — shares Form Request validation between Livewire components without duplication
+- `app/Actions/Auth/LoginUserAction.php` — encapsulates login + session regeneration and returns the intended redirect
+- `app/Actions/Auth/LogoutUserAction.php` — centralizes safe logout + session invalidation and CSRF token regen
+- `app/Actions/Auth/RegisterUserAction.php` — creates the user, hashes the password, fires `Registered`, and signs them in
+- `app/Actions/Auth/SendPasswordResetAction.php` — sends reset links and converts broker failures into validation errors
+- `app/Http/Controllers/Auth/LogoutController.php` — delegates logout work to an Action for a thinner controller
+- `app/Http/Requests/Auth/ForgotPasswordRequest.php` — simplifies rule types and keeps forgot-password validation consistent
+- `app/Http/Requests/Auth/LoginRequest.php` — aligns login validation and enables remember-me without widening inputs
+- `app/Http/Requests/Auth/RegisterRequest.php` — trims redundant string rules while keeping registration constraints clear
+- `app/Livewire/Auth/ForgotPasswordComponent.php` — uses the new Action instead of in-component broker calls
+- `app/Livewire/Auth/LoginComponent.php` — adds `remember` state and delegates auth to the login Action
+- `app/Livewire/Auth/RegisterComponent.php` — delegates user creation to the register Action
 - `changelog/changelog-2026-04-13.md` — records this update in a human-readable daily changelog
-- `design.md` — documents the Material 3-inspired design system direction and token strategy for the app
-- `resources/css/app.css` — adds mobile-first auth page styling, form controls, banners, and action buttons
-- `resources/views/components/auth-card.blade.php` — adds a reusable auth card wrapper shared across guest flows
-- `resources/views/layouts/auth.blade.php` — adds a dedicated auth layout with safe-area handling, fonts, Vite assets, and Livewire hooks
-- `resources/views/livewire/auth/forgot-password-component.blade.php` — renders the reset-link request screen
-- `resources/views/livewire/auth/login-component.blade.php` — renders the sign-in screen and auth navigation links
-- `resources/views/livewire/auth/register-component.blade.php` — renders the account creation screen and displays confirmation errors where users expect them
-- `resources/views/livewire/auth/reset-password-component.blade.php` — renders the password reset form
-- `routes/web.php` — registers guest auth routes and an authenticated logout route alongside the existing app home route
-- `tests/Feature/Auth/AuthPagesTest.php` — verifies auth flows work end to end, including stricter validation edge cases
+- `database/migrations/0001_01_01_000000_create_users_table.php` — adds `avatar` + `theme_preference` fields for user personalization
+- `database/migrations/2026_04_13_000100_create_categories_table.php` — adds user-owned categories for organizing tasks
+- `database/migrations/2026_04_13_000200_create_tasks_table.php` — adds core tasks with status/priority, due dates, ordering, and soft deletes
+- `database/migrations/2026_04_13_000300_create_subtasks_table.php` — adds subtasks for breaking work down with ordering support
+- `database/migrations/2026_04_13_000400_create_tags_table.php` — adds user-owned tags for flexible categorization
+- `database/migrations/2026_04_13_000500_create_task_category_table.php` — adds task↔category linking for many-to-many organization
+- `database/migrations/2026_04_13_000600_create_task_tag_table.php` — adds task↔tag linking for many-to-many organization
+- `database/migrations/2026_04_13_000700_create_attachments_table.php` — adds task attachments metadata for future uploads
+- `resources/css/app.css` — adds a small “Remember me” toggle style that matches the MD3 look
+- `resources/views/livewire/auth/login-component.blade.php` — adds the remember-me checkbox to the sign-in form
+- `resources/views/livewire/auth/register-component.blade.php` — renders password/confirmation errors in the most intuitive spot
+- `tests/Feature/Auth/AuthActionWiringTest.php` — ensures components/routes delegate to the new Actions
+- `tests/Feature/Auth/AuthPagesTest.php` — expands auth coverage, including remember-me and validation behavior
+- `tests/Feature/Database/TodoSchemaTest.php` — asserts Todo tables/columns exist and foreign keys cascade on delete
+- `tests/Unit/Actions/Auth/AuthActionsTest.php` — unit-tests the Actions (login/register/logout/reset-link) end to end
 
 ### Why This Matters
-This update moves the project from “screens that work” to “screens that hold up under real user input.” Centralizing validation keeps auth behavior consistent, improves error messaging, and gives the codebase a clean place to evolve rules without chasing them across multiple components. With a written design direction in the repo, future UI work can stay coherent and fast instead of reinventing decisions every time.
+With the schema in place, the Todo features can finally be built on something real — not placeholder tables — and the relationships (including cascades) are tested so future changes are safer. On the auth side, moving logic into Actions keeps the codebase easier to reason about, easier to test, and less likely to accumulate “just this one more thing” in Livewire components as the app grows.
 
 ---

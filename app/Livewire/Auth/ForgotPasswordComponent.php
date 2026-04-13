@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Auth;
 
+use App\Actions\Auth\SendPasswordResetAction;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Livewire\Concerns\UsesFormRequestValidation;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Password;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -29,17 +29,7 @@ class ForgotPasswordComponent extends Component
     {
         $validated = $this->validateWithFormRequest(ForgotPasswordRequest::class);
 
-        $status = Password::sendResetLink([
-            'email' => $validated['email'],
-        ]);
-
-        if ($status !== Password::RESET_LINK_SENT) {
-            $this->addError('email', __($status));
-
-            return;
-        }
-
-        $this->status = __($status);
+        $this->status = app(SendPasswordResetAction::class)->handle($validated['email']);
     }
 
     public function render(): View

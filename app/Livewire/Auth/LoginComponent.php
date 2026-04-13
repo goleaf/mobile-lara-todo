@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Auth;
 
+use App\Actions\Auth\LoginUserAction;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Livewire\Concerns\UsesFormRequestValidation;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -20,8 +20,14 @@ class LoginComponent extends Component
 
     public string $password = '';
 
+    public bool $remember = false;
+
     public function updated(string $property): void
     {
+        if (! in_array($property, ['email', 'password'], true)) {
+            return;
+        }
+
         $this->validateOnlyWithFormRequest($property, LoginRequest::class);
     }
 
@@ -29,15 +35,7 @@ class LoginComponent extends Component
     {
         $validated = $this->validateWithFormRequest(LoginRequest::class);
 
-        if (! Auth::attempt($validated)) {
-            $this->addError('email', __('auth.failed'));
-
-            return null;
-        }
-
-        session()->regenerate();
-
-        return redirect()->intended(route('app.home'));
+        return app(LoginUserAction::class)->handle($validated, $this->remember);
     }
 
     public function render(): View

@@ -409,6 +409,27 @@ md-fab {
     color: #b3261e;
 }
 
+.auth-toggle {
+    display: flex;
+    align-items: center;
+}
+
+.auth-toggle__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--app-text);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.auth-toggle__input {
+    width: 1.125rem;
+    height: 1.125rem;
+    margin: 0;
+    accent-color: var(--app-primary);
+}
+
 .status-banner {
     padding: 0.85rem 1rem;
     border-radius: 1rem;

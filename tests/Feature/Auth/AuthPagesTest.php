@@ -66,6 +66,15 @@ class AuthPagesTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
+    public function test_login_component_requires_a_password_with_minimum_length(): void
+    {
+        Livewire::test(LoginComponent::class)
+            ->set('email', 'user@example.com')
+            ->set('password', 'short')
+            ->call('login')
+            ->assertHasErrors(['password' => 'min']);
+    }
+
     public function test_forgot_password_component_sends_a_reset_link(): void
     {
         Notification::fake();
@@ -83,6 +92,37 @@ class AuthPagesTest extends TestCase
             ));
 
         Notification::assertSentTo($user, ResetPassword::class);
+    }
+
+    public function test_forgot_password_component_requires_an_existing_user_email(): void
+    {
+        Livewire::test(ForgotPasswordComponent::class)
+            ->set('email', 'missing@example.com')
+            ->call('sendResetLink')
+            ->assertHasErrors(['email' => 'exists']);
+    }
+
+    public function test_register_component_uses_custom_request_messages(): void
+    {
+        User::factory()->create([
+            'email' => 'taken@example.com',
+        ]);
+
+        Livewire::test(RegisterComponent::class)
+            ->set('name', '')
+            ->set('email', 'taken@example.com')
+            ->set('password', 'short')
+            ->set('passwordConfirmation', 'different')
+            ->call('register')
+            ->assertHasErrors([
+                'name' => 'required',
+                'email' => 'unique',
+                'password' => ['min', 'confirmed'],
+            ])
+            ->assertSee('Please enter your name.')
+            ->assertSee('That email address is already registered.')
+            ->assertSee('Your password must be at least 8 characters.')
+            ->assertSee('Your password confirmation does not match.');
     }
 
     public function test_reset_password_page_renders_and_can_update_the_password(): void

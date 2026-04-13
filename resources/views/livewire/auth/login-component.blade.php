@@ -30,6 +30,18 @@
             @error('password') <p class="field-error">{{ $message }}</p> @enderror
         </div>
 
+        <div class="auth-toggle">
+            <label class="auth-toggle__label" for="login-remember">
+                <input
+                    wire:model.live="remember"
+                    class="auth-toggle__input"
+                    id="login-remember"
+                    type="checkbox"
+                >
+                <span>Remember me</span>
+            </label>
+        </div>
+
         <button type="submit" class="md3-button md3-button--filled">Sign in</button>
     </form>
 
