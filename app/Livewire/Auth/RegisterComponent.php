@@ -2,11 +2,12 @@
 
 namespace App\Livewire\Auth;
 
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Livewire\Concerns\UsesFormRequestValidation;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rules\Password;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -15,6 +16,8 @@ use Livewire\Component;
 #[Title('Create account')]
 class RegisterComponent extends Component
 {
+    use UsesFormRequestValidation;
+
     public string $name = '';
 
     public string $email = '';
@@ -23,24 +26,18 @@ class RegisterComponent extends Component
 
     public string $passwordConfirmation = '';
 
-    protected function rules(): array
-    {
-        return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', Password::defaults()],
-            'passwordConfirmation' => ['required', 'same:password'],
-        ];
-    }
-
     public function updated(string $property): void
     {
-        $this->validateOnly($property);
+        $field = $property === 'passwordConfirmation' ? 'password' : $property;
+
+        $this->validateOnlyWithFormRequest($field, RegisterRequest::class, [
+            'password_confirmation' => $this->passwordConfirmation,
+        ]);
     }
 
     public function register()
     {
-        $validated = $this->validate();
+        $validated = $this->validateWithFormRequest(RegisterRequest::class);
 
         $user = User::create([
             'name' => $validated['name'],
@@ -54,6 +51,13 @@ class RegisterComponent extends Component
         session()->regenerate();
 
         return redirect()->route('app.home');
+    }
+
+    protected function prepareForValidation($attributes): array
+    {
+        $attributes['password_confirmation'] = $this->passwordConfirmation;
+
+        return $attributes;
     }
 
     public function render(): View

@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Auth;
 
+use App\Http\Requests\Auth\LoginRequest;
+use App\Livewire\Concerns\UsesFormRequestValidation;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -12,26 +14,20 @@ use Livewire\Component;
 #[Title('Sign in')]
 class LoginComponent extends Component
 {
+    use UsesFormRequestValidation;
+
     public string $email = '';
 
     public string $password = '';
 
-    protected function rules(): array
-    {
-        return [
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ];
-    }
-
     public function updated(string $property): void
     {
-        $this->validateOnly($property);
+        $this->validateOnlyWithFormRequest($property, LoginRequest::class);
     }
 
     public function login()
     {
-        $validated = $this->validate();
+        $validated = $this->validateWithFormRequest(LoginRequest::class);
 
         if (! Auth::attempt($validated)) {
             $this->addError('email', __('auth.failed'));

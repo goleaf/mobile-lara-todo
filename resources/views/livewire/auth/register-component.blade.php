@@ -54,6 +54,9 @@
                 placeholder="Repeat your password"
             >
             @error('passwordConfirmation') <p class="field-error">{{ $message }}</p> @enderror
+            @if ($errors->has('password') && str_contains(strtolower($errors->first('password')), 'confirm'))
+                <p class="field-error">{{ $errors->first('password') }}</p>
+            @endif
         </div>
 
         <button type="submit" class="md3-button md3-button--filled">Create account</button>
