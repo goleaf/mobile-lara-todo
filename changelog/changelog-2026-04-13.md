@@ -44,3 +44,6 @@ Nothing major was removed in this update — this was mostly about adding a soli
 With the schema in place, the Todo features can finally be built on something real — not placeholder tables — and the relationships (including cascades) are tested so future changes are safer. On the auth side, moving logic into Actions keeps the codebase easier to reason about, easier to test, and less likely to accumulate “just this one more thing” in Livewire components as the app grows.
 
 ---
+
+### Audit (Automation run)
+Just a quick housekeeping note: I re-scanned the repository on 2026-04-13 and confirmed the working tree is clean, `main` matches `origin/main`, and there are no extra local or remote branches to merge or delete. This is essentially a “nothing new to ship” check — but it’s still useful because it proves the repo is in a known-good state right now.
