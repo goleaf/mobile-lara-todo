@@ -1,0 +1,291 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Roboto Flex', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+:root {
+    --app-background: #f6f3ee;
+    --app-background-accent: #dfe7ff;
+    --app-surface: rgba(255, 251, 255, 0.84);
+    --app-surface-strong: #fff8f1;
+    --app-outline: rgba(31, 31, 36, 0.12);
+    --app-outline-strong: rgba(31, 31, 36, 0.2);
+    --app-text: #1c1b1f;
+    --app-text-muted: #5f6368;
+    --app-primary: #0b57d0;
+    --app-primary-container: #d3e3fd;
+    --app-secondary-container: #e8f0fe;
+    --app-shadow: 0 20px 50px rgba(11, 87, 208, 0.12);
+}
+
+html {
+    background:
+        radial-gradient(circle at top, color-mix(in srgb, var(--app-background-accent) 70%, transparent), transparent 55%),
+        linear-gradient(180deg, #fdfcff 0%, var(--app-background) 100%);
+}
+
+body {
+    min-height: 100dvh;
+    background:
+        radial-gradient(circle at top right, rgba(174, 203, 250, 0.42), transparent 26%),
+        linear-gradient(180deg, #fdfcff 0%, var(--app-background) 100%);
+    color: var(--app-text);
+}
+
+.app-shell {
+    min-height: 100dvh;
+    padding:
+        calc(1rem + env(safe-area-inset-top))
+        calc(1rem + env(safe-area-inset-right))
+        calc(6rem + env(safe-area-inset-bottom))
+        calc(1rem + env(safe-area-inset-left));
+}
+
+.top-bar,
+.app-main,
+.bottom-nav {
+    width: min(100%, 48rem);
+    margin-inline: auto;
+}
+
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.top-bar__eyebrow,
+.eyebrow {
+    margin-bottom: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--app-text-muted);
+}
+
+.top-bar__title,
+.hero-copy h2,
+.panel-card__header h2 {
+    margin: 0;
+    line-height: 1.1;
+}
+
+.top-bar__title {
+    font-size: clamp(1.4rem, 4vw, 2.1rem);
+}
+
+.top-bar__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.app-main {
+    display: grid;
+}
+
+.content-stack {
+    display: grid;
+    gap: 1rem;
+}
+
+.hero-card,
+.stat-card,
+.panel-card {
+    border: 1px solid var(--app-outline);
+    border-radius: 1.75rem;
+    background: var(--app-surface);
+    box-shadow: var(--app-shadow);
+    backdrop-filter: blur(20px);
+}
+
+.hero-card {
+    position: relative;
+    overflow: hidden;
+    padding: 1.35rem;
+    display: grid;
+    gap: 1.25rem;
+}
+
+.hero-card::before {
+    content: '';
+    position: absolute;
+    inset: auto -20% 45% auto;
+    width: 14rem;
+    height: 14rem;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(11, 87, 208, 0.14) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.hero-copy p:last-child {
+    max-width: 34rem;
+    color: var(--app-text-muted);
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.hero-fab {
+    justify-self: end;
+}
+
+.stats-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.stat-card {
+    padding: 1.15rem;
+}
+
+.stat-card__label {
+    margin-bottom: 0.35rem;
+    font-size: 0.82rem;
+    color: var(--app-text-muted);
+}
+
+.stat-card__value {
+    margin-bottom: 0.25rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.stat-card__description {
+    color: var(--app-text-muted);
+}
+
+.panel-card {
+    padding: 1.25rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.panel-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.feature-list {
+    display: grid;
+    gap: 0.75rem;
+    padding-left: 1.15rem;
+    color: var(--app-text-muted);
+    list-style: disc;
+}
+
+.feature-list code {
+    padding: 0.1rem 0.35rem;
+    border-radius: 9999px;
+    background: var(--app-secondary-container);
+    color: var(--app-primary);
+    font-size: 0.88em;
+}
+
+.bottom-nav {
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding:
+        0.75rem
+        calc(1rem + env(safe-area-inset-right))
+        calc(0.75rem + env(safe-area-inset-bottom))
+        calc(1rem + env(safe-area-inset-left));
+    border: 1px solid var(--app-outline-strong);
+    border-bottom: 0;
+    border-radius: 1.5rem 1.5rem 0 0;
+    background: rgba(255, 251, 255, 0.92);
+    box-shadow: 0 -10px 30px rgba(60, 64, 67, 0.12);
+    backdrop-filter: blur(18px);
+}
+
+.bottom-nav__link {
+    display: grid;
+    place-items: center;
+    gap: 0.2rem;
+    padding: 0.7rem 0.5rem;
+    border-radius: 1rem;
+    color: var(--app-text-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-align: center;
+    transition:
+        background-color 180ms ease,
+        color 180ms ease,
+        transform 180ms ease;
+}
+
+.bottom-nav__link .material-symbols-rounded {
+    font-size: 1.45rem;
+}
+
+.bottom-nav__link.is-active {
+    background: var(--app-primary-container);
+    color: var(--app-primary);
+}
+
+.bottom-nav__link:hover {
+    transform: translateY(-1px);
+}
+
+md-filled-button {
+    --md-filled-button-container-color: var(--app-primary);
+    --md-filled-button-label-text-color: #fff;
+}
+
+md-filled-tonal-button {
+    --md-filled-tonal-button-container-color: var(--app-primary-container);
+    --md-filled-tonal-button-label-text-color: var(--app-primary);
+}
+
+md-outlined-button {
+    --md-outlined-button-outline-color: var(--app-outline-strong);
+    --md-outlined-button-label-text-color: var(--app-text);
+}
+
+md-filled-icon-button,
+md-outlined-icon-button,
+md-assist-chip,
+md-fab {
+    --md-sys-color-primary: var(--app-primary);
+}
+
+@media (min-width: 48rem) {
+    .app-shell {
+        padding-inline: max(1.5rem, env(safe-area-inset-left));
+    }
+
+    .hero-card {
+        padding: 1.75rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .bottom-nav {
+        bottom: 1rem;
+        border-radius: 9999px;
+        border-bottom: 1px solid var(--app-outline-strong);
+    }
+}
